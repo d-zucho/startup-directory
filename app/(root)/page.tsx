@@ -1,7 +1,7 @@
-import Image from 'next/image'
 import SearchForm from '../../components/SearchForm'
-import { title } from 'process'
-import StartupCard from '@/components/StartupCard'
+import StartupCard, { StartupTypeCard } from '@/components/StartupCard'
+import { client } from '@/sanity/lib/client'
+import { STARTUPS_QUERY } from '@/sanity/lib/queries'
 
 export default async function Home({
   searchParams,
@@ -10,19 +10,23 @@ export default async function Home({
 }) {
   const query = (await searchParams).query
 
-  const posts = [
-    {
-      _createdAt: new Date(),
-      views: 55,
-      author: { _id: 1, name: 'John Doe' },
-      _id: 1,
-      description: 'This is an image',
-      image:
-        'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?q=80&w=1142&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-      category: 'Tech',
-      title: 'Better Keyboards',
-    },
-  ]
+  const posts = await client.fetch(STARTUPS_QUERY)
+
+  // console.log(JSON.stringify(posts, null, 2))
+
+  // const posts = [
+  //   {
+  //     _createdAt: new Date(),
+  //     views: 55,
+  //     author: { _id: 1, name: 'John Doe' },
+  //     _id: 1,
+  //     description: 'This is an image',
+  //     image:
+  //       'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?q=80&w=1142&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  //     category: 'Tech',
+  //     title: 'Better Keyboards',
+  //   },
+  // ]
 
   return (
     <>
@@ -44,10 +48,12 @@ export default async function Home({
 
         <ul className='mt-7 card_grid'>
           {/* map over different startups retrieved from Sanity */}
+
+          {/* ignore the following error with:
+           */}
           {posts?.length > 0
-            ? posts.map((post: StartupCardType, index: number) => (
-                // StartupCard component
-                <StartupCard key={post._id} post={post} />
+            ? posts?.map((post: StartupTypeCard) => (
+                <StartupCard key={post?._id} post={post} />
               ))
             : ''}
         </ul>

@@ -1,5 +1,6 @@
 import SearchForm from '../../components/SearchForm'
 import StartupCard, { StartupTypeCard } from '@/components/StartupCard'
+import { sanityFetch, SanityLive } from '@/lib/live'
 import { client } from '@/sanity/lib/client'
 import { STARTUPS_QUERY } from '@/sanity/lib/queries'
 
@@ -10,23 +11,9 @@ export default async function Home({
 }) {
   const query = (await searchParams).query
 
-  const posts = await client.fetch(STARTUPS_QUERY)
+  const params = { search: query || null }
 
-  // console.log(JSON.stringify(posts, null, 2))
-
-  // const posts = [
-  //   {
-  //     _createdAt: new Date(),
-  //     views: 55,
-  //     author: { _id: 1, name: 'John Doe' },
-  //     _id: 1,
-  //     description: 'This is an image',
-  //     image:
-  //       'https://images.unsplash.com/photo-1593640408182-31c70c8268f5?q=80&w=1142&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-  //     category: 'Tech',
-  //     title: 'Better Keyboards',
-  //   },
-  // ]
+  const { data: posts } = await sanityFetch({ query: STARTUPS_QUERY, params })
 
   return (
     <>
@@ -49,7 +36,7 @@ export default async function Home({
         <ul className='mt-7 card_grid'>
           {/* map over different startups retrieved from Sanity */}
 
-          {/* ignore the following error with:
+          {/* ignore the followsing error with:
            */}
           {posts?.length > 0
             ? posts?.map((post: StartupTypeCard) => (
@@ -58,6 +45,7 @@ export default async function Home({
             : ''}
         </ul>
       </section>
+      <SanityLive />
     </>
   )
 }
